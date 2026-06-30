@@ -246,6 +246,7 @@ export const usePlacementStore = create<PlacementState>()(
       interviews: [],
       mockTests: [],
       roadmap: generateRoadmap(),
+      isAdmin: false,
 
       dsaStats: {
         totalSolved: 0,

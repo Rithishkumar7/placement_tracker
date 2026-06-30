@@ -85,10 +85,8 @@ export function Header() {
             </Button>
           ) : (
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="text-xs font-mono h-8">
-                  Admin Login
-                </Button>
+              <DialogTrigger className="inline-flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground text-xs font-mono h-8 px-3">
+                Admin Login
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>

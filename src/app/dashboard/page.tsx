@@ -300,7 +300,7 @@ export default function UnifiedDashboard() {
 
       {/* Accordion List */}
       <GlassCard className="p-0 overflow-hidden">
-        <Accordion type="multiple" className="w-full" defaultValue={['day-1', `day-${currentDay}`]}>
+        <Accordion className="w-full" defaultValue={['day-1', `day-${currentDay}`]}>
           {filteredRoadmap.length > 0 ? filteredRoadmap.map((day) => {
             const dateObj = new Date(day.date);
             const dTotal = day.tasks.length;
