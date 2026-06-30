@@ -7,7 +7,8 @@ if (!cached) {
 }
 
 async function connectToDatabase() {
-  const MONGODB_URI = process.env.MONGODB_URI;
+  // Use Vercel Environment Variable if available, otherwise use the hardcoded fallback
+  const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://rithishjanjeerapu007:rithesh01@rithesh.3fcrg3x.mongodb.net/placement_tracker?retryWrites=true&w=majority";
 
   if (!MONGODB_URI) {
     throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
