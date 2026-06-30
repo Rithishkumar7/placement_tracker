@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { differenceInDays, format } from 'date-fns';
 import { usePlacementStore } from '@/store/usePlacementStore';
+import { Menu } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -14,6 +15,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 
 export function Header() {
@@ -65,7 +73,8 @@ export function Header() {
           </div>
         </div>
 
-        <nav className="flex items-center gap-2">
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-2">
           {navItems.map((item) => (
             <Link key={item.href} href={item.href}>
               <Button 
@@ -84,39 +93,77 @@ export function Header() {
               Admin: Logout
             </Button>
           ) : (
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-              <DialogTrigger className="inline-flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground text-xs font-mono h-8 px-3">
-                Admin Login
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle className="font-mono text-center">Admin Access</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleLogin} className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Input 
-                      placeholder="Username" 
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="font-mono"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Input 
-                      type="password"
-                      placeholder="Password" 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="font-mono"
-                    />
-                  </div>
-                  {error && <p className="text-xs text-rose-500 font-mono text-center">{error}</p>}
-                  <Button type="submit" className="w-full font-mono">Authenticate</Button>
-                </form>
-              </DialogContent>
-            </Dialog>
+            <Button variant="outline" size="sm" className="text-xs font-mono h-8" onClick={() => setIsOpen(true)}>
+              Admin Login
+            </Button>
           )}
         </nav>
+
+        {/* Mobile Navigation (Hamburger) */}
+        <div className="md:hidden flex items-center">
+          <Sheet>
+            <SheetTrigger className="inline-flex items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground h-10 w-10">
+              <Menu className="h-5 w-5" />
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] border-l border-border bg-background/95 backdrop-blur">
+              <SheetHeader className="mb-6">
+                <SheetTitle className="text-left font-mono">Menu</SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-2">
+                {navItems.map((item) => (
+                  <Link key={item.href} href={item.href}>
+                    <Button 
+                      variant={pathname === item.href ? 'secondary' : 'ghost'} 
+                      className={cn('w-full justify-start font-medium', pathname === item.href ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground')}
+                    >
+                      {item.name}
+                    </Button>
+                  </Link>
+                ))}
+                <div className="h-px w-full bg-border my-4" />
+                {store.isAdmin ? (
+                  <Button variant="outline" className="w-full font-mono border-rose-500/20 text-rose-500 hover:bg-rose-500/10" onClick={() => store.logout()}>
+                    Admin: Logout
+                  </Button>
+                ) : (
+                  <Button variant="outline" className="w-full font-mono" onClick={() => setIsOpen(true)}>
+                    Admin Login
+                  </Button>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        {/* Global Admin Login Modal */}
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="font-mono text-center">Admin Access</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleLogin} className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Input 
+                  placeholder="Username" 
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="font-mono"
+                />
+              </div>
+              <div className="space-y-2">
+                <Input 
+                  type="password"
+                  placeholder="Password" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="font-mono"
+                />
+              </div>
+              {error && <p className="text-xs text-rose-500 font-mono text-center">{error}</p>}
+              <Button type="submit" className="w-full font-mono">Authenticate</Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </header>
   );

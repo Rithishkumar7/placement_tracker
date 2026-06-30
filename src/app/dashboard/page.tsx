@@ -53,7 +53,7 @@ function DayTasks({ day, store }: { day: RoadmapDay, store: any }) {
   };
 
   return (
-    <div className="space-y-2 pl-12 pr-4">
+    <div className="space-y-2 pl-4 sm:pl-12 pr-2 sm:pr-4">
       {day.tasks.map((task) => (
         <div key={task.id} className="group flex items-center justify-between py-1 border-b border-transparent hover:border-border/40 transition-colors">
           {editingId === task.id ? (
@@ -108,7 +108,7 @@ function DayTasks({ day, store }: { day: RoadmapDay, store: any }) {
                   {task.tag}
                 </Badge>
                 
-                <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
                   {store.isAdmin && (
                     <>
                       <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => startEditing(task)}>
@@ -322,7 +322,7 @@ export default function UnifiedDashboard() {
                     </div>
 
                     {/* Right Side: Progress */}
-                    <div className="flex items-center gap-4 text-xs font-mono">
+                    <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-xs font-mono whitespace-nowrap">
                       <span className="text-muted-foreground">
                         {dCompleted}/{dTotal}
                       </span>
@@ -343,7 +343,7 @@ export default function UnifiedDashboard() {
                       </div>
 
                       {/* Line Progress Bar */}
-                      <div className="w-16 sm:w-24 h-1.5 bg-secondary rounded-full overflow-hidden">
+                      <div className="w-12 sm:w-24 h-1.5 bg-secondary rounded-full overflow-hidden shrink-0">
                         <div 
                           className="h-full bg-emerald-500 transition-all duration-500" 
                           style={{ width: `${progressPercentage}%` }} 
