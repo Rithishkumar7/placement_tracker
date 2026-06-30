@@ -7,7 +7,7 @@ const mongoStorage: StateStorage = {
     try {
       // Small delay to ensure hydration on client doesn't conflict during SSR
       if (typeof window === 'undefined') return null;
-      const res = await fetch('/api/sync');
+      const res = await fetch('/api/sync', { cache: 'no-store' });
       if (!res.ok) return null;
       const data = await res.json();
       return data?.store ? JSON.stringify(data.store) : null;

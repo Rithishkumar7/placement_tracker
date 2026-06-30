@@ -5,6 +5,8 @@ import { StoreModel } from '@/models/Store';
 // We simulate a single user environment. In a real app, you'd get this from NextAuth or Clerk.
 const DEFAULT_USER_ID = 'user-1';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await connectToDatabase();
