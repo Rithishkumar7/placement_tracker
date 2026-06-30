@@ -17,9 +17,9 @@ export async function GET() {
     }
     
     return NextResponse.json({ store: null });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching store from DB:', error);
-    return NextResponse.json({ error: 'Failed to fetch store' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch store', details: error?.message || String(error) }, { status: 500 });
   }
 }
 
@@ -42,8 +42,8 @@ export async function POST(request: Request) {
     );
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error saving store to DB:', error);
-    return NextResponse.json({ error: 'Failed to save store' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to save store', details: error?.message || String(error) }, { status: 500 });
   }
 }
