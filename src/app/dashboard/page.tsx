@@ -243,26 +243,15 @@ export default function UnifiedDashboard() {
 
       {/* Stat Cards Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        <GlassCard className="p-4 space-y-2 hover:bg-card/60 transition-colors">
-          <div className="text-xs font-mono text-muted-foreground font-bold tracking-wider">DSA</div>
-          <div className="text-3xl font-bold text-rose-500">{tagCounts['DSA']}</div>
-        </GlassCard>
-        <GlassCard className="p-4 space-y-2 hover:bg-card/60 transition-colors">
-          <div className="text-xs font-mono text-muted-foreground font-bold tracking-wider uppercase">AI</div>
-          <div className="text-3xl font-bold text-purple-500">{tagCounts['AI']}</div>
-        </GlassCard>
-        <GlassCard className="p-4 space-y-2 hover:bg-card/60 transition-colors">
-          <div className="text-xs font-mono text-muted-foreground font-bold tracking-wider uppercase">Backend</div>
-          <div className="text-3xl font-bold text-emerald-500">{tagCounts['Backend Web']}</div>
-        </GlassCard>
-        <GlassCard className="p-4 space-y-2 hover:bg-card/60 transition-colors">
-          <div className="text-xs font-mono text-muted-foreground font-bold tracking-wider uppercase">Core</div>
-          <div className="text-3xl font-bold text-amber-500">{tagCounts['Core']}</div>
-        </GlassCard>
-        <GlassCard className="p-4 space-y-2 hover:bg-card/60 transition-colors">
-          <div className="text-xs font-mono text-muted-foreground font-bold tracking-wider uppercase">Aptitude</div>
-          <div className="text-3xl font-bold text-blue-500">{tagCounts['Aptitude']}</div>
-        </GlassCard>
+        {availableTags.map(tag => {
+          const colorClass = tagColors[tag].split(' ').find(c => c.startsWith('text-')) || 'text-primary';
+          return (
+            <GlassCard key={tag} className="p-4 space-y-2 hover:bg-card/60 transition-colors">
+              <div className="text-xs font-mono text-muted-foreground font-bold tracking-wider uppercase">{tag}</div>
+              <div className={`text-3xl font-bold ${colorClass}`}>{tagCounts[tag]}</div>
+            </GlassCard>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
