@@ -9,8 +9,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { format, differenceInDays, isToday, isPast } from 'date-fns';
-import { Trash2, Plus, Edit2, Check, X, ChevronDown, Lock } from 'lucide-react';
+import { format, differenceInDays } from 'date-fns';
+import { Trash2, Plus, Edit2, Check, X, ChevronDown, Lock, Sparkles } from 'lucide-react';
+import Link from 'next/link';
 
 const tagColors: Record<string, string> = {
   'Backend Web': 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
@@ -215,6 +216,10 @@ export default function UnifiedDashboard() {
     return true;
   });
 
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+  const pendingTodosCount = store.todos?.filter(t => !t.completed).length || 0;
+
   return (
     <div className="space-y-6 pb-20">
       
@@ -287,73 +292,114 @@ export default function UnifiedDashboard() {
         </div>
       )}
 
-      {/* Accordion List */}
-      <GlassCard className="p-0 overflow-hidden">
-        <Accordion className="w-full" defaultValue={['day-1', `day-${currentDay}`]}>
-          {filteredRoadmap.length > 0 ? filteredRoadmap.map((day) => {
-            const dateObj = new Date(day.date);
-            const dTotal = day.tasks.length;
-            const dCompleted = day.tasks.filter(t => t.completed).length;
-            const progressPercentage = dTotal === 0 ? 100 : (dCompleted / dTotal) * 100;
-            
-            return (
-              <AccordionItem key={day.dayNumber} value={`day-${day.dayNumber}`} className="border-b border-border/50 px-6">
-                <AccordionTrigger className="hover:no-underline py-4">
-                  <div className="flex items-center justify-between w-full pr-4">
-                    {/* Left Side: Day and Date */}
-                    <div className="flex items-center gap-4">
-                      <div className="w-8 h-8 rounded border border-border/50 flex items-center justify-center font-mono text-sm text-primary">
-                        {day.dayNumber}
-                      </div>
-                      <span className="font-mono text-muted-foreground">
-                        {format(dateObj, 'EEE, dd MMM')}
-                      </span>
-                    </div>
-
-                    {/* Right Side: Progress */}
-                    <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-xs font-mono whitespace-nowrap">
-                      <span className="text-muted-foreground">
-                        {dCompleted}/{dTotal}
-                      </span>
-                      
-                      {/* Dotted indicator */}
-                      <div className="hidden sm:flex gap-1">
-                        {Array.from({ length: 4 }).map((_, i) => {
-                          const threshold = (i + 1) * 25;
-                          const isFilled = progressPercentage >= threshold;
-                          const colors = ['bg-rose-400', 'bg-amber-400', 'bg-blue-400', 'bg-emerald-400'];
-                          return (
-                            <div 
-                              key={i} 
-                              className={`w-1.5 h-1.5 rounded-full transition-colors ${isFilled ? colors[i] : 'bg-secondary'}`}
-                            />
-                          );
-                        })}
-                      </div>
-
-                      {/* Line Progress Bar */}
-                      <div className="w-12 sm:w-24 h-1.5 bg-secondary rounded-full overflow-hidden shrink-0">
-                        <div 
-                          className="h-full bg-emerald-500 transition-all duration-500" 
-                          style={{ width: `${progressPercentage}%` }} 
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </AccordionTrigger>
+      {/* Accordion List & To-Do Reminder Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Task Table (Left Side) */}
+        <div className="lg:col-span-2">
+          <GlassCard className="p-0 overflow-hidden">
+            <Accordion className="w-full" defaultValue={['day-1', `day-${currentDay}`]}>
+              {filteredRoadmap.length > 0 ? filteredRoadmap.map((day) => {
+                const dateObj = new Date(day.date);
+                const dTotal = day.tasks.length;
+                const dCompleted = day.tasks.filter(t => t.completed).length;
+                const progressPercentage = dTotal === 0 ? 100 : (dCompleted / dTotal) * 100;
                 
-                <AccordionContent className="pb-6 pt-2">
-                  <DayTasks day={day} store={store} />
-                </AccordionContent>
-              </AccordionItem>
-            );
-          }) : (
-            <div className="p-8 text-center text-muted-foreground font-mono text-sm">
-              No days found for this filter.
-            </div>
+                return (
+                  <AccordionItem key={day.dayNumber} value={`day-${day.dayNumber}`} className="border-b border-border/50 px-6">
+                    <AccordionTrigger className="hover:no-underline py-4">
+                      <div className="flex items-center justify-between w-full pr-4">
+                        {/* Left Side: Day and Date */}
+                        <div className="flex items-center gap-4">
+                          <div className="w-8 h-8 rounded border border-border/50 flex items-center justify-center font-mono text-sm text-primary">
+                            {day.dayNumber}
+                          </div>
+                          <span className="font-mono text-muted-foreground">
+                            {format(dateObj, 'EEE, dd MMM')}
+                          </span>
+                        </div>
+
+                        {/* Right Side: Progress */}
+                        <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-xs font-mono whitespace-nowrap">
+                          <span className="text-muted-foreground">
+                            {dCompleted}/{dTotal}
+                          </span>
+                          
+                          {/* Dotted indicator */}
+                          <div className="hidden sm:flex gap-1">
+                            {Array.from({ length: 4 }).map((_, i) => {
+                              const threshold = (i + 1) * 25;
+                              const isFilled = progressPercentage >= threshold;
+                              const colors = ['bg-rose-400', 'bg-amber-400', 'bg-blue-400', 'bg-emerald-400'];
+                              return (
+                                <div 
+                                  key={i} 
+                                  className={`w-1.5 h-1.5 rounded-full transition-colors ${isFilled ? colors[i] : 'bg-secondary'}`}
+                                />
+                              );
+                            })}
+                          </div>
+
+                          {/* Line Progress Bar */}
+                          <div className="w-12 sm:w-24 h-1.5 bg-secondary rounded-full overflow-hidden shrink-0">
+                            <div 
+                              className="h-full bg-emerald-500 transition-all duration-500" 
+                              style={{ width: `${progressPercentage}%` }} 
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    
+                    <AccordionContent className="pb-6 pt-2">
+                      <DayTasks day={day} store={store} />
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              }) : (
+                <div className="p-8 text-center text-muted-foreground font-mono text-sm">
+                  No days found for this filter.
+                </div>
+              )}
+            </Accordion>
+          </GlassCard>
+        </div>
+
+        {/* To-Do Reminder Widget (Right Side) */}
+        <div className="lg:col-span-1">
+          {mounted && (
+            <GlassCard className={`p-6 space-y-4 ${pendingTodosCount > 0 ? 'border-rose-500/30 bg-rose-500/5' : 'border-border/50 bg-secondary/20'}`}>
+              <h3 className={`font-mono font-bold flex items-center gap-2 ${pendingTodosCount > 0 ? 'text-rose-500' : 'text-primary'}`}>
+                <Sparkles className="w-4 h-4" /> General To-Dos
+              </h3>
+              
+              {pendingTodosCount > 0 ? (
+                <>
+                  <p className="text-sm font-mono text-muted-foreground">
+                    You have <span className="font-bold text-emerald-400">{pendingTodosCount}</span> pending task(s) waiting for you.
+                  </p>
+                  <Link href="/dashboard/todo" className="block w-full mt-4">
+                    <Button className="w-full font-mono bg-rose-500 hover:bg-rose-600 text-white">
+                      View Tasks &rarr;
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-mono text-muted-foreground italic">
+                    You're all caught up! No pending general tasks.
+                  </p>
+                  <Link href="/dashboard/todo" className="block w-full mt-4">
+                    <Button variant="outline" className="w-full font-mono text-muted-foreground">
+                      Manage To-Dos
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </GlassCard>
           )}
-        </Accordion>
-      </GlassCard>
+        </div>
+      </div>
     </div>
   );
 }
