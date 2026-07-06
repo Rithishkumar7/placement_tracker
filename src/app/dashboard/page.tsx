@@ -304,8 +304,26 @@ export default function UnifiedDashboard() {
       {/* Accordion List & To-Do Reminder Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Task Table (Left Side) */}
-        <div className="lg:col-span-2">
+        {/* Task Table & Motivational Quote (Left Side) */}
+        <div className="lg:col-span-2 space-y-6">
+          
+          {/* Motivational Quote (Borderless) */}
+          <div className="py-8 flex flex-col justify-center relative overflow-hidden group">
+            {/* Background glow tied to the quote's color */}
+            <div className={`absolute inset-0 opacity-10 bg-gradient-to-br ${motivationalQuotes[currentDay % motivationalQuotes.length].color} blur-[100px] transition-opacity duration-1000 group-hover:opacity-30 pointer-events-none`} />
+            
+            <div className="relative z-10 flex flex-col items-center gap-4 px-4">
+              <Sparkles className="w-5 h-5 text-muted-foreground/30" />
+              <p className={`text-center text-transparent bg-clip-text bg-gradient-to-br ${motivationalQuotes[currentDay % motivationalQuotes.length].color} ${motivationalQuotes[currentDay % motivationalQuotes.length].size} ${motivationalQuotes[currentDay % motivationalQuotes.length].font} max-w-2xl`}>
+                "{motivationalQuotes[currentDay % motivationalQuotes.length].text}"
+              </p>
+              <p className="text-center font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+                — {motivationalQuotes[currentDay % motivationalQuotes.length].author}
+              </p>
+            </div>
+          </div>
+
+          {/* Accordion List */}
           <GlassCard className="p-0 overflow-hidden">
             <Accordion className="w-full" defaultValue={['day-1', `day-${currentDay}`]}>
               {filteredRoadmap.length > 0 ? filteredRoadmap.map((day) => {
@@ -409,23 +427,6 @@ export default function UnifiedDashboard() {
               )}
             </GlassCard>
           )}
-
-          {/* Motivational Quote Widget */}
-          <GlassCard className="p-8 border-border/50 bg-secondary/10 flex flex-col justify-center min-h-[220px] relative overflow-hidden group">
-            {/* Background glow tied to the quote's color */}
-            <div className={`absolute inset-0 opacity-10 bg-gradient-to-br ${motivationalQuotes[currentDay % motivationalQuotes.length].color} blur-[80px] transition-opacity duration-1000 group-hover:opacity-30`} />
-            
-            <div className="relative z-10 flex flex-col items-center gap-6">
-              <Sparkles className="w-6 h-6 text-muted-foreground/30" />
-              <p className={`text-center text-transparent bg-clip-text bg-gradient-to-br ${motivationalQuotes[currentDay % motivationalQuotes.length].color} ${motivationalQuotes[currentDay % motivationalQuotes.length].size} ${motivationalQuotes[currentDay % motivationalQuotes.length].font}`}>
-                "{motivationalQuotes[currentDay % motivationalQuotes.length].text}"
-              </p>
-              <p className="text-center font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
-                — {motivationalQuotes[currentDay % motivationalQuotes.length].author}
-              </p>
-            </div>
-          </GlassCard>
-          
         </div>
       </div>
     </div>
