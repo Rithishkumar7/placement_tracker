@@ -23,6 +23,15 @@ const tagColors: Record<string, string> = {
 
 const availableTags = Object.keys(tagColors);
 
+const motivationalQuotes = [
+  { text: "Consistency is harder when no one is clapping for you. You must clap for yourself during those times.", author: "Unknown", color: "from-amber-200 to-amber-500", size: "text-lg", font: "font-serif italic" },
+  { text: "The difference between ordinary and extraordinary is that little extra.", author: "Jimmy Johnson", color: "from-emerald-300 to-cyan-500", size: "text-xl", font: "font-sans font-bold tracking-tight" },
+  { text: "First solve the problem. Then, write the code.", author: "John Johnson", color: "from-purple-400 to-pink-600", size: "text-2xl", font: "font-mono font-black" },
+  { text: "It's not that I'm so smart, it's just that I stay with problems longer.", author: "Albert Einstein", color: "from-rose-400 to-orange-500", size: "text-xl", font: "font-serif italic" },
+  { text: "Every great developer you know got there by solving problems they were unqualified to solve.", author: "Patrick McKenzie", color: "from-blue-400 to-emerald-400", size: "text-lg", font: "font-sans font-semibold leading-relaxed" },
+  { text: "Success is the sum of small efforts, repeated day in and day out.", author: "Robert Collier", color: "from-emerald-400 to-rose-400", size: "text-xl", font: "font-serif italic" },
+];
+
 function DayTasks({ day, store }: { day: RoadmapDay, store: any }) {
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [editTitle, setEditTitle] = React.useState('');
@@ -365,8 +374,10 @@ export default function UnifiedDashboard() {
           </GlassCard>
         </div>
 
-        {/* To-Do Reminder Widget (Right Side) */}
-        <div className="lg:col-span-1">
+        {/* Widgets (Right Side) */}
+        <div className="lg:col-span-1 space-y-6">
+          
+          {/* To-Do Widget */}
           {mounted && (
             <GlassCard className={`p-6 space-y-4 ${pendingTodosCount > 0 ? 'border-rose-500/30 bg-rose-500/5' : 'border-border/50 bg-secondary/20'}`}>
               <h3 className={`font-mono font-bold flex items-center gap-2 ${pendingTodosCount > 0 ? 'text-rose-500' : 'text-primary'}`}>
@@ -398,6 +409,23 @@ export default function UnifiedDashboard() {
               )}
             </GlassCard>
           )}
+
+          {/* Motivational Quote Widget */}
+          <GlassCard className="p-8 border-border/50 bg-secondary/10 flex flex-col justify-center min-h-[220px] relative overflow-hidden group">
+            {/* Background glow tied to the quote's color */}
+            <div className={`absolute inset-0 opacity-10 bg-gradient-to-br ${motivationalQuotes[currentDay % motivationalQuotes.length].color} blur-[80px] transition-opacity duration-1000 group-hover:opacity-30`} />
+            
+            <div className="relative z-10 flex flex-col items-center gap-6">
+              <Sparkles className="w-6 h-6 text-muted-foreground/30" />
+              <p className={`text-center text-transparent bg-clip-text bg-gradient-to-br ${motivationalQuotes[currentDay % motivationalQuotes.length].color} ${motivationalQuotes[currentDay % motivationalQuotes.length].size} ${motivationalQuotes[currentDay % motivationalQuotes.length].font}`}>
+                "{motivationalQuotes[currentDay % motivationalQuotes.length].text}"
+              </p>
+              <p className="text-center font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+                — {motivationalQuotes[currentDay % motivationalQuotes.length].author}
+              </p>
+            </div>
+          </GlassCard>
+          
         </div>
       </div>
     </div>
