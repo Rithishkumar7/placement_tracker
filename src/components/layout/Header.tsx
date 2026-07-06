@@ -47,7 +47,16 @@ export function Header() {
     { name: 'Notes', href: '/dashboard/notes' },
   ];
 
+  const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const pendingTodosCount = mounted && store.todos ? store.todos.filter(t => !t.completed).length : 0;
+
+  React.useEffect(() => {
+    if (!mounted) return;
+    
     // Only show if there are incomplete todos, and we haven't shown it today
     const hasIncomplete = store.todos?.some(t => !t.completed);
     const todayStr = format(new Date(), 'yyyy-MM-dd');
@@ -101,9 +110,14 @@ export function Header() {
               <Button 
                 variant={pathname === item.href ? 'secondary' : 'ghost'} 
                 size="sm" 
-                className={cn('text-sm font-medium', pathname === item.href ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground')}
+                className={cn('text-sm font-medium relative', pathname === item.href ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground')}
               >
                 {item.name}
+                {mounted && item.name === 'To-Do' && pendingTodosCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow-sm shadow-rose-500/50">
+                    {pendingTodosCount}
+                  </span>
+                )}
               </Button>
             </Link>
           ))}
@@ -135,9 +149,14 @@ export function Header() {
                   <Link key={item.href} href={item.href}>
                     <Button 
                       variant={pathname === item.href ? 'secondary' : 'ghost'} 
-                      className={cn('w-full justify-start font-medium', pathname === item.href ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground')}
+                      className={cn('w-full justify-start font-medium relative', pathname === item.href ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground')}
                     >
                       {item.name}
+                      {mounted && item.name === 'To-Do' && pendingTodosCount > 0 && (
+                        <span className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[11px] font-bold text-white shadow-sm shadow-rose-500/50">
+                          {pendingTodosCount}
+                        </span>
+                      )}
                     </Button>
                   </Link>
                 ))}
@@ -187,20 +206,22 @@ export function Header() {
         </Dialog>
 
         {/* Daily To-Do Reminder Modal */}
-        <Dialog open={todoReminderOpen} onOpenChange={setTodoReminderOpen}>
-          <DialogContent className="sm:max-w-sm">
-            <DialogHeader>
-              <DialogTitle className="font-mono text-center text-rose-500">Pending Tasks Reminder</DialogTitle>
-            </DialogHeader>
-            <div className="py-4 text-center font-mono text-sm text-muted-foreground space-y-4">
-              <p>You have incomplete tasks on your To-Do list!</p>
-              <p>Don't let them pile up.</p>
-            </div>
-            <Button onClick={dismissReminder} className="w-full font-mono bg-rose-500 hover:bg-rose-600 text-white">
-              Got it, I'll do them today
-            </Button>
-          </DialogContent>
-        </Dialog>
+        {mounted && (
+          <Dialog open={todoReminderOpen} onOpenChange={setTodoReminderOpen}>
+            <DialogContent className="sm:max-w-sm">
+              <DialogHeader>
+                <DialogTitle className="font-mono text-center text-rose-500 text-xl font-bold">Pending Tasks!</DialogTitle>
+              </DialogHeader>
+              <div className="py-6 text-center font-mono text-base text-muted-foreground space-y-4">
+                <p>You have <span className="text-emerald-400 font-bold">{pendingTodosCount}</span> incomplete tasks on your To-Do list.</p>
+                <p className="text-sm">Don't let them pile up, knock them out today!</p>
+              </div>
+              <Button onClick={dismissReminder} className="w-full font-mono bg-rose-500 hover:bg-rose-600 text-white h-12 text-base">
+                Got it, I'm on it!
+              </Button>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </header>
   );
