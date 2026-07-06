@@ -78,6 +78,14 @@ export interface RoadmapTask {
   tag: string;
 }
 
+export interface TodoTask {
+  id: string;
+  title: string;
+  completed: boolean;
+  tag: string;
+  createdAt: string;
+}
+
 export interface RoadmapDay {
   dayNumber: number;
   date: string;
@@ -94,6 +102,8 @@ export interface PlacementState {
   interviews: Interview[];
   mockTests: MockTest[];
   roadmap: RoadmapDay[];
+  todos: TodoTask[];
+  lastTodoReminderDate: string;
 
   // Tracks
   dsaStats: {
@@ -129,6 +139,13 @@ export interface PlacementState {
   addRoadmapTask: (dayNumber: number, task: Omit<RoadmapTask, 'id'>) => void;
   updateRoadmapTask: (dayNumber: number, taskId: string, data: Partial<RoadmapTask>) => void;
   deleteRoadmapTask: (dayNumber: number, taskId: string) => void;
+  
+  addTodo: (task: Omit<TodoTask, 'id' | 'createdAt'>) => void;
+  updateTodo: (id: string, data: Partial<TodoTask>) => void;
+  deleteTodo: (id: string) => void;
+  toggleTodo: (id: string) => void;
+  setLastTodoReminderDate: (date: string) => void;
+
   isAdmin: boolean;
   login: (u: string, p: string) => boolean;
   logout: () => void;
@@ -246,6 +263,8 @@ export const usePlacementStore = create<PlacementState>()(
       interviews: [],
       mockTests: [],
       roadmap: generateRoadmap(),
+      todos: [],
+      lastTodoReminderDate: "",
       isAdmin: false,
 
       dsaStats: {
@@ -330,6 +349,24 @@ export const usePlacementStore = create<PlacementState>()(
           }
           return day;
         })
+      })),
+      addTodo: (task) => set((state) => ({
+        todos: [
+          ...state.todos, 
+          { ...task, id: Math.random().toString(36).substr(2, 9), createdAt: new Date().toISOString() }
+        ]
+      })),
+      updateTodo: (id, data) => set((state) => ({
+        todos: state.todos.map(t => t.id === id ? { ...t, ...data } : t)
+      })),
+      deleteTodo: (id) => set((state) => ({
+        todos: state.todos.filter(t => t.id !== id)
+      })),
+      toggleTodo: (id) => set((state) => ({
+        todos: state.todos.map(t => t.id === id ? { ...t, completed: !t.completed } : t)
+      })),
+      setLastTodoReminderDate: (date) => set(() => ({
+        lastTodoReminderDate: date
       })),
       login: (u, p) => {
         if (u === 'rithesh' && p === 'rithesh07') {

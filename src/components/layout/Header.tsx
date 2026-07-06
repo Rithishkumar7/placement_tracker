@@ -31,6 +31,7 @@ export function Header() {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState('');
+  const [todoReminderOpen, setTodoReminderOpen] = React.useState(false);
   
   const startDate = new Date('2026-07-01');
   const endDate = new Date('2026-09-30');
@@ -40,10 +41,30 @@ export function Header() {
 
   const navItems = [
     { name: 'Dashboard', href: '/dashboard' },
+    { name: 'To-Do', href: '/dashboard/todo' },
     { name: 'Resources', href: '/dashboard/resources' },
     { name: 'Analytics', href: '/dashboard/analytics' },
     { name: 'Notes', href: '/dashboard/notes' },
   ];
+
+  React.useEffect(() => {
+    // Only show if there are incomplete todos, and we haven't shown it today
+    const hasIncomplete = store.todos?.some(t => !t.completed);
+    const todayStr = format(new Date(), 'yyyy-MM-dd');
+    
+    if (hasIncomplete && store.lastTodoReminderDate !== todayStr) {
+      // Delay slightly so it doesn't flash immediately on load
+      const timer = setTimeout(() => {
+        setTodoReminderOpen(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [store.todos, store.lastTodoReminderDate]);
+
+  const dismissReminder = () => {
+    store.setLastTodoReminderDate(format(new Date(), 'yyyy-MM-dd'));
+    setTodoReminderOpen(false);
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,6 +183,22 @@ export function Header() {
               {error && <p className="text-xs text-rose-500 font-mono text-center">{error}</p>}
               <Button type="submit" className="w-full font-mono">Authenticate</Button>
             </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Daily To-Do Reminder Modal */}
+        <Dialog open={todoReminderOpen} onOpenChange={setTodoReminderOpen}>
+          <DialogContent className="sm:max-w-sm">
+            <DialogHeader>
+              <DialogTitle className="font-mono text-center text-rose-500">Pending Tasks Reminder</DialogTitle>
+            </DialogHeader>
+            <div className="py-4 text-center font-mono text-sm text-muted-foreground space-y-4">
+              <p>You have incomplete tasks on your To-Do list!</p>
+              <p>Don't let them pile up.</p>
+            </div>
+            <Button onClick={dismissReminder} className="w-full font-mono bg-rose-500 hover:bg-rose-600 text-white">
+              Got it, I'll do them today
+            </Button>
           </DialogContent>
         </Dialog>
       </div>
