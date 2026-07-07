@@ -92,6 +92,15 @@ export interface RoadmapDay {
   tasks: RoadmapTask[];
 }
 
+export interface Note {
+  id: string;
+  title: string;
+  type: 'pdf' | 'link';
+  url: string;
+  tags: string[];
+  createdAt: string;
+}
+
 export interface PlacementState {
   startDate: string;
   endDate: string;
@@ -104,6 +113,7 @@ export interface PlacementState {
   roadmap: RoadmapDay[];
   todos: TodoTask[];
   lastTodoReminderDate: string;
+  notes: Note[];
 
   // Tracks
   dsaStats: {
@@ -145,6 +155,10 @@ export interface PlacementState {
   deleteTodo: (id: string) => void;
   toggleTodo: (id: string) => void;
   setLastTodoReminderDate: (date: string) => void;
+
+  addNote: (note: Omit<Note, 'id' | 'createdAt'>) => void;
+  updateNote: (id: string, data: Partial<Note>) => void;
+  deleteNote: (id: string) => void;
 
   isAdmin: boolean;
   login: (u: string, p: string) => boolean;
@@ -265,6 +279,7 @@ export const usePlacementStore = create<PlacementState>()(
       roadmap: generateRoadmap(),
       todos: [],
       lastTodoReminderDate: "",
+      notes: [],
       isAdmin: false,
 
       dsaStats: {
@@ -367,6 +382,18 @@ export const usePlacementStore = create<PlacementState>()(
       })),
       setLastTodoReminderDate: (date) => set(() => ({
         lastTodoReminderDate: date
+      })),
+      addNote: (note) => set((state) => ({
+        notes: [
+          ...state.notes,
+          { ...note, id: Math.random().toString(36).substr(2, 9), createdAt: new Date().toISOString() }
+        ]
+      })),
+      updateNote: (id, data) => set((state) => ({
+        notes: state.notes.map(n => n.id === id ? { ...n, ...data } : n)
+      })),
+      deleteNote: (id) => set((state) => ({
+        notes: state.notes.filter(n => n.id !== id)
       })),
       login: (u, p) => {
         if (u === 'rithesh' && p === 'rithesh07') {
