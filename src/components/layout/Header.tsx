@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { differenceInDays, format } from 'date-fns';
+import { differenceInCalendarDays, format } from 'date-fns';
 import { usePlacementStore } from '@/store/usePlacementStore';
 import { Menu } from 'lucide-react';
 import {
@@ -35,8 +35,8 @@ export function Header() {
   const startDate = new Date('2026-07-01');
   const endDate = new Date('2026-09-30');
   const today = new Date();
-  const totalDays = differenceInDays(endDate, startDate);
-  const currentDay = Math.max(1, Math.min(totalDays, differenceInDays(today, startDate) + 1));
+  const totalDays = differenceInCalendarDays(endDate, startDate);
+  const currentDay = Math.max(1, Math.min(totalDays, differenceInCalendarDays(today, startDate) + 1));
 
   const navItems = [
     { name: 'Dashboard', href: '/dashboard' },

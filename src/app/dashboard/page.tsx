@@ -9,7 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { format, differenceInDays } from 'date-fns';
+import { format, differenceInCalendarDays } from 'date-fns';
 import { Trash2, Plus, Edit2, Check, X, ChevronDown, Lock, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
@@ -189,8 +189,8 @@ export default function UnifiedDashboard() {
   const startDate = new Date('2026-07-01');
   const endDate = new Date('2026-09-30');
   const today = new Date();
-  const totalDays = differenceInDays(endDate, startDate);
-  const currentDay = Math.max(1, Math.min(totalDays, differenceInDays(today, startDate) + 1));
+  const totalDays = differenceInCalendarDays(endDate, startDate);
+  const currentDay = Math.max(1, Math.min(totalDays, differenceInCalendarDays(today, startDate) + 1));
 
   // Compute Overall Progress
   let totalTasks = 0;
